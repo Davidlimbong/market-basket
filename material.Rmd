@@ -1,0 +1,680 @@
+---
+title: "Cross-Selling and Product Recommendation: Market Basket Analysis"
+author: 
+  - "David Tahi Ulubalang"
+  - "Arga Adyatama"
+date: "8 June 2020"
+output:
+  html_document:
+    number_sections: true
+    toc: true
+    toc_depth: 3
+    toc_float:
+      collapsed: false
+    df_print: paged
+    theme: united
+    highlight: breezedark
+    css: assets/style.css
+  pdf_document:
+    latex_engine: xelatex
+---
+
+
+```{r setup, include=FALSE}
+# clean up the environment
+rm(list = ls())
+
+# setup chunk options
+knitr::opts_chunk$set(
+  message = FALSE,
+  warning = FALSE,
+  fig.align = "center",
+  comment = "#>"
+)
+
+options(scipen = 9999)
+```
+
+<style>
+body {
+text-align: justify}
+</style>
+
+Materi berikut diproduksi oleh tim dari Algoritma untuk *Cross-Selling and Product Recommendation: Market Basket Analysis*. Materi berikut hanya ditujukan untuk kalangan terbatas, meliputi individu/personal yang menerima materi ini secara langsung dari lembaga pelatihan. Materi ini dilarang untuk direproduksi, didistribusikan, diterjemahkan, atau diadaptasikan dalam bentuk apapun di luar izin dari individu dan organisasi yang berkepentingan.
+
+**Algoritma** adalah pusat pendidikan Data Science di Jakarta. Kami mengadakan workshop dan program pelatihan untuk membantu para profesional dan pelajar untuk mendapatkan keahlian dalam berbagai bidang dalam ruang lingkup Data Science: data visualization, machine learning, data modeling, statistical inference, dan lain-lainnya.
+
+Sebelum masuk ke dalam materi dan menjalankan kode-kode di dalam materi ini, silakan anda melihat bagian **Library and Setup** untuk melihat dan memastikan semua persyaratan dasar untuk mengikuti materi ini sudah terpenuhi termasuk package-package yang diperlukan. Pada bagian **Training Objectives** anda dapat melihat secara umum apa saja yang akan dipelajari dalam modul materi ini. Kami harap materi ini akan bermanfaat bagi karir ataupun menambah keahlian penerima materi.
+
+# Preface {.tabset}
+
+## Pendahuluan
+
+**Market Basket Analysis** atau yang biasa juga disebut sebagai Association Rules adalah salah satu  metode machine learning yang bertujuan untuk mencari pola-pola interaksi antara variabel yang ada. Market basket analysis sering diterapkan dalam industri retail untuk mencari pola keterkaitan antar item satu dengan lainnya dalam satu transaksi yang sama. Hasil akhir dari analisis ini adalah terbentuknya aturan (rules) yang dapat digunakan sebagai dasar dari tindakan bisnis yang diambil seperti menetapkan promo pada suatu barang, merekomendasikan suatu produk yang tepat kepada pelanggan, dll. Analisis ini juga dapat diterapkan di bidang industri lain seperti bidang kesehatan dan manufaktur.
+
+Materi online ini bertujuan untuk memberikan pemahaman terhadap Market Basket Analysis. Dengan mempelajari market basket analysis menggunakan data yang ada, diharapkan penerima materi dapat memahami kegunaan dan potensi market basket analysis yang sesuai dengan proses bisnis yang ada di profesi atau bidang industri yang dijalani oleh penerima materi.
+
+## Library and Setup
+
+Untuk dapat mengikuti materi ini, anda diharapkan sudah menginstall beberapa packages dibawah ini. Apabila package tersebut belum terinstall, jalankan chunk atau baris kode berikut. Apabila sudah ter-install, lewati chunk berikut dan langsung muat package dengan menjalankan chunk selanjutnya.
+
+```{r eval=FALSE}
+install.packages(c("dplyr","arules", "arulesViz", "knir", "rmarkdown", "plotly"))
+```
+
+
+```{r}
+# data wrangling
+library(dplyr)
+
+# Association Rules
+library(arules)
+
+# visualisasi
+library(arulesViz)
+```
+
+
+## Training Objectives
+Tujuan utama dari materi ini adalah untuk memberikan peserta pengenalan yang komprehensif tentang alat dan perangkat lunak untuk melakukan market basket analysis menggunakan alat open-source populer: R. Materi akan mencakup:
+
+- **Dasar Bahasa Pemrograman R**
+  - R dan R studio
+  - Tipe data pada R
+  - Struktur data pada R
+	  
+- **Menyiapkan Data dengan R**
+  - Memasukkan dataset
+  - Bekerja dengan data log transaksi pada R : tips dan teknik
+  - Bekerja dengan matriks sparse
+  - Memvisualisasikan data transaksi
+	  
+- **Algoritma Apriori untuk Analisis Keranjang Pasar**
+  - Metrik analisis keranjang pasar
+  - Algoritma Apriori
+  - Mengekstraksi aturan
+  - Mengevaluasi kinerja model
+	  
+- **Studi Kasus**
+  - Analisis Keranjang Pasar pada Dataset Retail
+  - Menganalisis Aturan yang Dihasilkan
+  - Membuat visualisasi yang interaktif pada aturan yang dihasilkan
+	 
+	 
+Pada akhir workshop ini kita akan mengerjakan *Learn by Building* dengan menggunakan xxx dataset. Kami telah menyiapkan template Rmd dengan beberapa bagian yang perlu Anda isi untuk menyelesaikan latihan. Dengan menggunakan apa yang telah Anda pelajari, cobalah untuk membuat laporan market basket analysis lengkapi laporan dengan rekomendasi bisnis berdasarkan hasilnya!
+	 
+
+# Tools Introduction
+
+Sebelum membahas lebih lanjut kedalam analisis data, kita perlu mengenal tools yang akan digunakan. Terdapat 2 tools yang digunakan pada analisis ini yaitu R dan R Studio.  
+
+R merupakan bahasa pemrograman dimana seperangkat instruksi akan diterjemahkan ke dalam bahasa komputer, sedangkan R Studio merupakan aplikasi tambahan yang dapat membantu pengguna R melakukan pekerjaanya. 
+
+```{r fig.width=5, echo=FALSE}
+knitr::include_graphics(path = "image/rstudio.png")
+```
+
+
+## Why Learn R?
+
+1. **Dibangun oleh ahli statistik, untuk ahli statistik.**      
+
+R adalah bahasa pemrograman statistik yang dibuat oleh Ross Ihaka dan Robert Gentleman di Departemen Statistik, di University of Auckland (Selandia Baru). R dibuat untuk analisis data dan, dengan demikian, berbeda dari bahasa pemrograman tradisional. R bukan hanya bahasa pemrograman statistik, itu adalah lingkungan yang lengkap untuk analis data dan perangkat lunak analisis data yang paling banyak digunakan saat ini.     
+
+2. **Memiliki banyak Library**     
+
+R menyediakan banyak packages tambahan yang menambahkan fungsionalitas out-of-the-box untuk berbagai kegunaan: uji statistik, analisis deret waktu, visualisasi yang indah, dan berbagai tugas machine learning seperti algoritma regresi, algoritma klasifikasi, dan algoritma clustering. Komunitas R terkenal karena kontribusinya yang aktif dalam hal packages.      
+
+3. **Sumber Terbuka**      
+
+Bagian dari alasan komunitasnya yang aktif dan berkembang pesat adalah sifat sumber terbuka (open-source) dari R. Pengguna dapat berkontribusi dalam pembuatan packages, banyak tools statistik dan template kustomisasi untuk visualisasi yang tidak ditemukan dalam aplikasi statistik lain. 
+
+4. **Digunakan oleh berbagai perusahaan perangkat lunak Terbesar di Dunia**      
+
+R digunakan oleh Google untuk menghitung Return on Investment (ROI) dari berbagai iklan, dan seringkali digunakan untuk mengestimasi _casual effect_; seperti estimasi dampak dari sebuah fitur dari suatu aplikasi terhadap jumlah _download_ dari aplikasi tersebut, ataupun peningkatan tingkat penjualan setelah mengeluarkan _AdWords_. Bahkan, Google merilis _package_ R yang dapat digunakan oleh pengguna R lain untuk melakukan analisis serupa (lihat [`CausalImpact`](https://opensource.googleblog.com/2014/09/causalimpact-new-open-source-package.html){target="_blank"}). Banyak pegawai di Google telah berkontribusi aktif terhadap komunitas pengguna R: mereka seringkali aktif dalam berbagai grup pengguna R; [membuat _interface_ untuk _Google Prediction_](https://code.google.com/archive/p/google-prediction-api-r-client/){target="_blank"}; [membuat _coding style_ versi Google untuk R](http://web.stanford.edu/class/cs109l/unrestricted/resources/google-style.html){target="_blank"}, dan telah berkontribusi berbagai _package_ untuk R.
+    
+   
+**Microsoft** juga termasuk sebagai salah satu di antara perusahaan besar yang sangat bergantung pada R. Pada awalnya, Microsoft menggunakan R dalam: _platform_ Azure--tepatnya sebagai _capacity planning_; sistem _matchmaking_ pada Xbox's TrueSkill; analisis _churn_ untuk berbagai produk; dan beberapa _internal services_ lain dalam [Microsoft's line of products](http://blog.revolutionanalytics.com/2015/06/r-at-microsoft.html){target="_blank"}. Langkah penting yang diambil oleh Microsoft dalam hal ini adalah akuisisi dari _Revolution Analytics_, yang terkenal atas berbagai produk perkembangan di R; yang sekarang lebih dikenal sebagai _Microsoft R Server_, _Microsoft R Open_, _Microsoft Data Science Virtual Machine_, dll.   
+    
+    
+5. **Ready for Big Data**     
+
+R dapat terintegrasi dengan tools lain dalam pengolahan big data, library seperti RHadoop, ParallelR, merupakan sebagian dari packages yang ada yang mampu membantu data engineers untuk melakukan komputasi pararel di R. 
+
+
+## Navigating R Studio
+
+Pada awal materi kita telah membahas perbedaan utama antara R dan R Studio. R Studio memiliki beberapa panel yang tersedia, jika anda sedang membaca materi ini pada format file R Markdown (.Rmd), anda sedang melihat panel source dari R Studio. Sekarang mari kita bahas beberapa panel yang terdapat pada R Studio : 
+
+
+![](image/panel.png)
+
+Terdapat 4 panel utama yang harus anda pahami yaitu :      
+1. **Panel Source** : Panel ini merupakan fitur utama dari R Studio, panel ini menampilkan file yang sedang terbuka pada R Studio.        
+
+2. **Panel Console** : Panel ini menampilkan console asli dari R yang digunakan untuk berkomunikasi dengan R session. Terdapat beberapa tab lain seperti Terminal yang dapat digunakan untuk mengakses komputer anda melalui command-line iterface (CLI).     
+
+3. **Panel Environment / History** : Bagian ini menampilkan seluruh object R yang sudah dibuat selama session yang sama. Terdapat tab History yang berfungsi untuk melihat history dari kode yang sudah dijalankan sebelumnya.     
+
+4. Panel keempat memiliki beberapa tab seperti :     
+  - tab files : Daftar dari berkas (file) yang berada didalam working directory.
+  - tab plot : Menampilkan visualisasi yang terbentuk
+  - tab packages : Berisi daftar packages yang sudah terinstall
+  - tab Help : Menampilkan dokumentasi resmi dari setiap fungsi     
+  
+
+Materi ini menggunakan R markdown file (.Rmd) yang sudah terintegrasi dengan R Studio dan beberapa fitur sudah diatur dalam packges rmarkdown. R markdown dapat digunakan untuk membuat report dari analisa dengan standar yang tinggi. Jika anda melihat lokasi original dari dari file ini maka anda akan menemukan 3 file utama yaitu : file R Markdown, html, dan pdf. File HTML dan PDF dihasilkan dari R markdown dengan fungsi `knit` dari packages rmarkdown.
+
+Pada R markdown anda dapat memasukkan narasi dari report serta kode program dari analisis anda, tempat untuk memasukkan kode program pada R markdown disebut chunk. Terdapat 2 cara untuk membuat chunk yaitu :     
+
+1. menggunakan shortcut `ctrl` + `alt` + `i`     
+2. menggunakan tombol insert yang berada pada pojok kanan atas dari panel source kemudian pilih R     
+
+
+# R Basic Programming
+
+Langkah penting dalam mempelajari bahasa pemrograman R adalah mengenali cara kerja R, dan cara kerja menggunakan RStudio. Kita akan mempelajari lebih jauh cara kerja R dan fitur-fitur yang ada di dalam RStudio; dan jika ini adalah pertama kalinya Anda bekerja menggunakan bahasa pemrograman, berusahalah untuk membiasakan diri dengan tools ini, karena anda akan seringkali menggunakan RStudio untuk berbagai kebutuhan di suatu projek data science.    
+Ketika bekerja menggunakan R Studio penting bagi kita untuk mengetahui lokasi dari *working directory* saat ini. Untuk mengetahui directory anda saat ini anda dapat membuat chunk lalu jalankan fungsi `getwd()`, atau jalan chunk dibawah ini 
+
+```{r}
+getwd()
+```
+
+R menyimpan data kedalam objek R, objek tersebut disimpan dalam memori dari setiap session di R, berikut contoh dari membuat objek
+
+```{r}
+activity <- "Algoritma"
+```
+
+`activity` disebut sebagai objek yang menampung suatu nilai yaitu "Algoritma". Jika anda menjalan chunk diatas maka sekarang akan muncul objek `activity` pada panel environment. Untuk memanggil objek yang sudah dibuat anda dapat menjalakan chunk dibawah ini 
+```{r}
+activity
+```
+
+R juga merupakan bahasa pemrograman yang *case sensitive* sehingga "Algoritma" berbeda dengan "algoritma".
+```{r}
+activity == "algoritma"
+```
+
+Tanda `==` berfungsi untuk mengecek apakah nilai disisi kiri sama dengan nilai disisi kanan. Output dari kode tersebut merupakan `FALSE` yang berarti kedua data tersebut berbeda. 
+
+
+## Data Type in R
+
+Pada umumnya struktur data dari objek di R adalah vector. vector merupakan kumpulan beberapa nilai yang memiliki tipe data yang sama dan tersusun dalam satu dimensi. Terdapat 5 tipe data dasar di R yaitu : 
+
+```{r}
+# character
+a_char <- c("Algoritma", "Indonesia", "e-Commerce", "Jakarta")
+# complex
+a_comp <- c(1+3i, (1+3i)*2)
+# numeric
+a_num <- c(-1, 1, 2, 3/4, 0.5)
+# integer
+an_int <- c(1L, 2L)
+# logical
+a_log <- c(TRUE, TRUE, FALSE)
+```
+
+untuk mengetahui tipe data dari suatu objek anda dapat menggunakan fungsi `class()`
+```{r}
+class(a_char)
+```
+
+Apa yang terjadi jika dalam satu vector memiliki beberapa tipe data yang berbeda seperti chunk dibawah ini
+
+```{r}
+mix <- c("Algoritma", 2020, TRUE)
+mix
+```
+
+Bila anda perhatikan setiap nilai pada vector mix memiliki tanda petik yang berarti nilai tersebut sebuah character. Proses perubahan paksa dari suatu vector bisa disebut sebagai **implicit coercion**. ilustrasi dari implicit coercion dapat dilihat pada gambar dibawah
+
+![](image/datatype.png)
+
+Ilustrasi diatas menunjukkan hirarki dari tipe data di R, tipe data yang paling spesifik merupakan logical dan tipe data paling umum yaitu character. Implicit coercion akan mengubah tipe data ke tipe data paling general dari nilai nilai yang ada. Vector mix diubah menjadi tipe character karena terdapat nilai "algoritma" yang bertipe character. 
+
+```{r}
+class(mix)
+```
+
+**Knowledge Check**
+Tentukan tipe data dari vector vector dibawah ini?      
+- c(TRUE, 1L, 1/2)     
+- c("1", 12, 33.3)     
+- c(1,2,3,4L)     
+
+
+## Data Structures in R
+
+Sekarang anda sudah mengetahui bagaimana cara menyimpan suatu objek kedalam suatu vector, dan bagaimana sifat dari suatu vector. dalam R terdapat beberapa cara menyimpan suatu nilai kedalam objek seperti list, matrix dan data frame. kita akan mebahas masing masing struktur data tersebut.
+
+
+### Matrix
+
+`matrix` merupakan salah satu cara di R untuk menyimpan data dalam bentuk objek. Matrix memiliki sifat yang sama dengan vector yaitu hanya dapat menyimpan satu tipe data saja. Untuk membuat sebuah `matrix`,anda dapat menggunakan fungsi `matrix()`:
+
+```{r}
+mat <- matrix(11:16, nrow = 3, ncol = 2)
+mat
+```
+
+Perhatikan bagaimana nilai dalam sebuah `matrix` terisi; `matrix` akan terisi secara baris terlebih dahulu karena parameter `byrow` yang bernilai `FALSE` secara _default_. Nilai dalam sebuah `matrix` akan terisi dari indeks `[1, 1]` dapat dibaca sebagai `[row index, column index]` yang merupakan nilai paling kiri atas.
+
+### List
+
+Dalam `vector` dan `matrix`, kita hanya bisa menggunakan data dengan tipe data yang sama. Jika kita ingin menyimpan beberapa data dengan tipe data yang berbeda, kita bisa menggunakan `list`:
+
+```{r}
+our_list <- list(c(TRUE, FALSE), "TRUE", c(1, 6, 12), 1L)
+
+our_list
+```
+
+Seperti yang dapat dilihat di atas, sebuah `list` dapat menyimpan objek dengan tipe yang berbeda, dan juga memperbolehkan masing-masing objek di dalamnya untuk memiliki `length` yang berbeda juga. Seperti `vector`, sebuah `list` hanya memiliki 1 dimensi; namun jika kita mengakses data di dalamnya menggunakan `[]`, kita masih akan mendapatkan objek dengan struktur data berupa `list`:
+
+```{r}
+class(our_list[3])
+```
+
+Untuk mengakses _vector_ yang ada di dalamnya, maka kita bisa menggunakan `[[]]`:
+
+```{r}
+class(our_list[[3]])
+```
+
+### Data Frames
+
+Dalam pengolahan data, seringkali kita akan dihadapkan dengan data berbentuk tabel; seperti hasil rekapitulasi penjualan dari masing-masing toko. Umumnya, data dengan bentuk seperti ini akan memiliki 2 dimensi, yaitu baris yang menggambarkan setiap observasi dan kolom yang menggambarkan setiap variabel dari data. 
+
+Untuk merepresentasikan data yang berbentuk seperti itu, kita bisa menggunakan objek dengan struktur data `data.frame`. Untuk membuat sebuah data frame kita bisa menggunakan fungsi `data.frame()` seperti dibawah ini
+
+```{r}
+daftar_buah <- data.frame(
+  buah = c("Apel", "Semangka", "Jambu"),
+  ukuran = c(22,76, 12)
+)
+
+daftar_buah
+```
+<center>
+
+
+Apabila dirangkum karakter dari ke-4 struktur data yang ada dapat di gambarkan seperti ilustrasi dibawah ini. 
+
+![](image/structure.png)
+</center>
+
+
+# Data Wrangling in R
+
+Setelah memahami dasar dari pemrograman di R seperti tipe data dan struktur data, sekarang kita akan bekerja dengan  data `Onlineretail.csv` yang sudah tersedia pada folder data. Data ini diperoleh dari repositori data [UCI](http://archive.ics.uci.edu/ml/datasets/Online+Retail/). Untuk membaca data tersebut di R anda bisa menggunakan fungsi `read.csv()`. 
+
+```{r}
+retail <- read.csv("data/OnlineRetail.csv") 
+```
+
+Bila anda terbisa bekerja dengan spreadsheet anda pasti akan melihat seluruh data yang akan diolah. Mempertimbangkan data transaksi yang memiliki dimensi yang besar akan memperlambat kinerja mesin bila kita melihat seluruh isi data. Oleh sebab itu ketika bekerja dengan R anda tidak perlu melihat seluruh data anda, namun ada beberapa hal yang perlu pada data seperti:
+
+1. Kolom apa saja yang ada pada data     
+2. Melihat sample dari data
+3. Tipe data dari setiap kolom
+4. Rangkuman dari data     
+
+Untuk mengetahui struktur dari data yang akan diolah kita bisa menggunakan fungsi `str()`.
+
+```{r}
+str(retail)
+```
+
+Dari output diatas, bisa diketahui bahwa terdapat 541 ribu observasi dengan 8 kolom. Berikut penjelasan untuk setiap kolom :
+
+* **InvocieNo** : Nomer invoice/faktur pembelian      
+* **StockCode** : Kode stok barang       
+* **Description** : Nama barang       
+* **Quantity** : Jumlah pembelian      
+* **InvoiceDate** : Tanggal invoice diterbitkan       
+* **UnitPrice** : Harga satuan barang      
+* **CustomerID** : ID pelanggan       
+* **Country** : Negara asal pelanggan      
+
+Informasi yang terdapat setelah nama kolom, misalkan <fct>. <int>, dan <dbl> menunjukkan tipe data untuk setiap kolom, dengan ketentuan:      
+* `<dbl>` : double atau numerik     
+* `<int>` : integer atau bilangan bulat     
+* `<chr>` : character     
+
+Untuk melihat sample data, kita bisa menggunakan fungsi `head()` yang bertujuan untuk menunjukkan 6 baris data teratas. 
+
+```{r}
+head(retail)
+```
+
+sedangkan untuk melihat data baris terakhir, bisa menggunakan fungsi `tail()`
+
+```{r}
+tail(retail)
+```
+
+untuk mengetahui kondisi data saat ini akan sulit apabila hanya melihat dari sebagian data saja, oleh sebab itu kita akan menggunakan fungsi `summary()` untuk melihat rangkuman dari data. 
+
+```{r}
+summary(retail)
+```
+
+Dari hasil `summary()` diatas kita bisa melihat apabila suatu data bertipe numerik, kita dapat mengetahui beberapa nilai statistik seperti min, Q1, Q2, mean, Q3, dan max. 
+
+Perlu diperhatikan pada kolom `quantity` terdapat barang yang terjual negatif, oleh sebab itu kita perlu melakukan beberapa praproses data sebelum melakukan market basket analysis.
+ 
+## Data Cleansing
+
+Seperti yang sudah kita ketahui bahwa R memiliki banyak packages dari berbagai kontributor, salah satu packages yang paling sering digunakan dalam melakukan praproses data yaitu packages `dplyr`.
+
+Sekarang mari kita lihat berapa banyak data yang memiliki `Quantity` kurang dari 1
+
+```{r}
+retail %>% 
+  filter(Quantity < 1)
+```
+
+fungsi `filter()` digunakan untuk memilih baris mana saja yang akan diambil berdasarkan kondisi yang diberikan, pada kasus ini adalah `Quantity` kurang dari 1. Tanda `%>%` (dibaca piping) digunakan untuk menunjukkan proses apa yang harus dilakukan terhadap data yang dimiliki. Tulisan `retail %>% filter(Quantity < 1)` artinya kita punya data bernama `retail` yang kemudian kita hanya pilih baris dengan kondisi `Quantity` kurang dari 1. 
+
+Hasil diatas menunjukkan bahwa terdapat 10 ribu baris yang memiliki `Quantity` kurang dari 1, Quantity kurang dari 0 memiliki arti barang tersebut terjual dalam kondisi diskon. Untuk saat ini kita tidak akan menggunakan data tersebut karena kita tidak ingin melihat pengaruh diskon pada aturan yang terbentuk nanti.
+
+Selain melakukan filtering terhadap data kita juga perlu melakukan seleksi terhadap kolom apa saja yang akan digunakan. Pada Market basket analysis ini kita hanya akan menggunakan kolom `InvoiceNo` dan `Description`. Untuk memilih 2 kolom tersebut bisa menggunakan fungsi `select()`
+
+```{r}
+retail %>% 
+  select(InvoiceNo, Description)
+```
+
+Proses filter dan select diatas belum disimpan kedalam objek, seian itu kedua proses tersebut dapat digabungkan menjadi satu  proses dengan bantuan `%>%` (piping)
+
+```{r}
+retail_clean <- retail %>% 
+  filter(Quantity > 0) %>% 
+  select(InvoiceNo, Description)
+
+head(retail_clean)
+```
+
+hasil dari proses *filtering* dan *selection* disimpan pada objek `retail_clean`, objek inilah yang akan kita gunakan dalam proses analisis kedepanya.
+
+ 
+## Exploratory data analysis
+
+Ketika bekerja dengan data, proses eksplorasi data merupakan tahapan yang penting. Proses eksplorasi data bertujuan untuk mendapatkan informasi - informasi yang tidak terlihat apabila melihat data secara langsung. Dalam proses ini ada beberapa hal yang harus dicari tahu, seperti :
+
+- Barang apa yang paling sering dibeli oleh pelanggan?       
+- Berapa banyak barang yang dibeli setiap transaksi?       
+
+Untuk menjawab pertanyan diatas anda perlu melakukan aggregasi terhadap data, dibawah ini merupakan kode untuk mencari tahu *Barang apa yang paling sering dibeli oleh pelanggan?* 
+
+```{r}
+retail_clean %>% 
+  count(Description, name = "freq", sort = TRUE) 
+```
+
+fungsi `count` bertujuan untuk menghitung frekuensi kemunculan dari variabel yang dipilih, pada kasus ini adalah `Description`. Parameter `name` merupakan nama dari kolom hasil perhitungan frekuensi, dan parameter `sort` bernilai TRUE atau FALSE yang bertujuan untuk mengurutkan data. 
+
+**dive deeper** : 
+
+lakukan aggregasi data untuk menjawab pertanyaan *berapa banyak barang yang dibeli setiap transaksi* ?
+
+```{r}
+# Code here
+
+```
+
+
+# Market Basket Analysis using Apriori
+
+Market Basket Analysis atau sering juga disebut Association rules adalah kegiatan mencari aturan (rules) asosiasi yang menunjukkan hubungan antar item dalam sebuah transaksi. Misalkan, seseorang ketika membeli roti juga akan cenderung membeli selai atau ketika seseorang membeli sikat gigi juga akan membeli pasta giginya. Pola-pola data ini akan sangat bermanfaat di retail seperti untuk penetapan diskon produk, promo, penjualan dalam bentuk paket, rekomendasi produk, serta penentuan lokasi item produk.
+
+Bidang industri lain juga dapat menggunakan analisis ini yaitu untuk menemukan pola di dalam data, misalnya di bidang kesehatan assocation rules digunakan untuk mendapatkan hubungan dan interaksi antara faktor resiko seseorang dengan kecenderungan penyakit yang muncul. Di bidang genetika, association rules dapat digunakan untuk menemukan antara asosiasi faktor lingkungan dengan ekspresi gen yang muncul. Di bidang manufaktur, association rules dapat digunakan untuk mencari pola hubungan antara parameter-parameter proses produksi dengan potensi permasalahan kualitas produk. Market Basket Analysis juga dapat digunakan untuk mencari pola-pola desain produk yang diinginkan oleh pelanggan sehingga dapat menjadi dasar perancangan desain produk.
+
+Terdapat beberapa algoritma atau metode untuk menemukan rules, salah satu yang populer adalah *Apriori Algorithm*. Association rules atau aturan asosiasi yang dihasilkan nantinya akan memilki bentuk sebagai berikut.
+
+$$A => B$$
+
+
+A adalah *antecedent* atau pendahulu sedangkan B adalah *consequent* atau akibat. Cara membacanya adalah jika seseorang membeli A, maka ada kecenderungan dia juga akan membeli item B. Antecedent dapat berisis satu atau lebih item yang menjadi penanda bahwa ketika kita sudah tahu dia membeli item tersebut maka dia juga akan membeli item consequent. Bentuk hubungan ini tidak bersifat kausalitas atau sebab akibat, tetapi berbentuk co-occurence atau terjadi saling bersamaan.
+
+## Metrics
+
+Sebelum masuk ke dalam penjelasan tentang algoritma Apriori, pertama kita harus mengetahui dahulu metrik atau tolak ukur yang digunakan dalam association rules, yang meliputi *Support*, *Confidence*, dan *Lift*.
+
+Sebagai ilustrasi, kita akan menggunakan data buatan berikut dengan 5 transaksi.
+
+```{r}
+df_dummy <- data.frame(transaction_id = 1:5,
+                       items = c("soft drink, mineral water", 
+                                 "soft drink", 
+                                 "coffee, mineral water, lemon tea",
+                                 "bread, coffee, mineral water",
+                                 "coffee, mineral water"))
+
+df_dummy
+```
+
+
+
+### Support
+
+Support menunjukkan proporsi dari jumlah transaksi yang memiliki satu atau lebih item yang muncul secara bersamaan dibandingkan dengan jumlah transaksi secara keseluruhan. Rumus untuk menghitung Support dari suatu item adalah sebagai berikut:
+
+$$Support(B) = \frac{Jumlah\ transaksi\ yang\ berisi\ item\ B }{Jumlah\ seluruh\ transaksi} = \frac{Freq(B)}{N}$$
+
+Berdasarkan data transaksi sebelumnya, maka Support untuk item `soft drink` adalah sebagai berikut.
+
+$$Support(soft\ drink) =  \frac{2}{5} = 0.4$$
+
+
+Artinya 40% dari total transaksi mengandung item soft drink.  
+
+Jika itemnya lebih dari satu, maka rumusnya menjadi seperti berikut:
+
+$$Support(A,B) = \frac{Jumlah\ transaksi\ yang\ berisi\ item\ A\ \&\ B }{Jumlah\ seluruh\ transaksi} = \frac{Freq(A \cup B)}{N}$$
+
+Berdasarkan data transaksi sebelumnya, maka Support untuk item `coffee` dan `mineral water`  adalah sebagai berikut.
+
+$$Support(coffee, mineral\ water) =  \frac{3}{5} = 0.6$$
+
+Artinya 60% dari total transaksi mengandung item coffee dan mineral water.  
+
+### Confidence
+
+Jika Support hanya menunjukkan seberapa banyak proporsi sebuah item di seluruh transaksi, maka confidence menunjukkan **seberapa besar kemungkinan seseorang akan membeli item B jika terdapat item A**, atau setara dengan seberapa banyak jumlah transaksi yang memiliki item A dan B di antara transaksi-transaksi yang memiliki item A. Rumus untuk menghitung Confidence adalah sebagai berikut:
+
+$$Confidence(A => B) = \frac{Freq(A\ \cap\ B)}{Freq(A)}$$
+
+Berdasarkan data transaksi sebelumnya, maka Confidence untuk item `coffee` dan `mineral water` adalah sebagai berikut.
+
+$$Confidence(mineral\ water => coffee) =  \frac{3}{4} = 0.75$$
+
+Confidence(mineral water => coffee) menunjukkan rules/aturan jika seseorang membeli mineral water, berapa kemungkinannya dia juga membeli coffee. Maka, kita tinggal cari ada berapa transaksi yang terdapat item mineral water dan coffee dan dibagi dengan seluruh transaksi yang di dalamnya terdapat mineral water. Dari total 5 transaksi yang ada, 4 di antaranya terdapat item mineral water dan dari 4 transaksi tersebut terdapat 3 transaksi yang memiliki coffee maupun mineral water, sehingga nilai Confidence(mineral water => coffee) adalah 3 dari 4 transaksi atau sama degan 75%. Maka, ketika seseorang membeli mineral water, kemungkinan seseorang membeli juga coffee adalah sekitar 75%.
+
+Kelemahan Confidence adalah dia hanya mempertimbangkan seberapa banyak/populer item A saja (lihat bagian penyebut) dan tidak memperhatikan seberapa populer item B di dalam seluruh transaksi. Kita ilustrasikan dengan diagram Venn berikut.
+
+```{r echo=FALSE}
+knitr::include_graphics("image/venn.png")
+```
+
+Terdapat 80 transaksi yang berisi Milk dan 13 transaksi berisi Toothbrush. Ada 10 transaksi di mana terdapat Milk dan Toothbrush. Jika kita memiliki rules bahwa Toothbrush => Milk, maka Confidence-nya adalah:
+
+$$Confidence(Toothbrush => Milk) = \frac{10}{13} = 76.9\%$$
+
+Ketika seseorang membeli Toothbrush maka ada kemungkinan 76.9% dia juga akan membeli Milk. Sekilas mungkin masuk akal, tetapi bila diperhatikan, Milk memiliki jumlah transaksi yang besar dan hanya sedikit dari transaksi tersebut yang berkaitan dengan Toothbrush. Karena item Milk sangat populer, maka wajar jika transaksi orang yang membeli Toothbrush juga akan cenderung membeli Milk, sehinnga meningkatkan nilai Confidence-nya. Untuk mengatasi hal ini, maka terdapat satu metrik lagi yang menggunakan informasi dari antecedent dan precedent, yakni Lift.
+
+### Lift
+
+Lift, sesuai namanya, menunjukkan seberapa baik sebuah antecedent "mengangkat" atau meningkatkan peluang seseorang membeli item consequent. Jika Confidence hanya mengukur seberapa besar peluang untuk membeli item B jika diketahui item A dibeli, maka Lift mengukur seberapa besar pembelian item A meningkatkan peluang pembelian item B. Rumus untuk menghitung Lift adalah sebagai berikut:
+
+$$Lift(A,B) = \frac{Support(A,B)}{Support(A)\ Support(B)}$$
+
+Berdasarkan data transaksi sebelumnya, maka Lift untuk item `coffee` dan `mineral water` adalah sebagai berikut.
+
+Pertama kita hitung terlebih dahulu nilai dari masing-masing Support yang dibutuhkan.
+
+$$Support(mineral\ water, coffee) =  \frac{3}{5} = 0.6$$
+
+$$Support(mineral\ water) =  \frac{4}{5} = 0.8$$
+
+$$Support(coffee) =  \frac{3}{5} = 0.6$$
+
+Setelah mendapatkan semua nilai Support, kemudian masukkan nilai support yang diperoleh ke dalam rumus untuk mendapatkan nilai Lift dari `mineral water => coffee`.
+
+$$Lift(mineral\ water => coffee) = \frac{0.6}{0.6\ 0.8} = 1.25$$
+
+Didapatkan nilai Lift(mineral water => coffee) = 1.25. Bagaimana cara menginterpretasikannya? Lift membandingkan peluang ketika keberadaan item satu menjadi sinyal kuat bahwa item lain juga akan dibeli dengan peluang bahwa keberadaan item satu dengan lainnya saling independen dan tidak berkaitan. Maka:
+
+* Jika nilai Lift = 1, maka kedua item bersifat independen satu sama lain (tidak ada rules yang terbentuk).
+* Ketika nilai Lift > 1, maka dapat kita katakan bahwa keberadaan mineral water meningkatkan peluang bahwa seseorang juga membeli coffee. 
+* Jika nilai Lift < 1, maka pembelian mineral water malah menurunkan peluang bahwa seseorang juga akan membeli coffee.
+
+## Apriori Algorithm
+
+Algoritma yang umum digunakan untuk membuat association rules adalah *Apriori Algorithm*. Berikut adalah cara kerja Apriori secara general:     
+
+1. Menentukan nilai minimum Support dan minimum Confidence     
+2. Membuat itemsets dari daftar item yang ada
+3. Membandingkan support dari itemsets tersebut dengan minimum support, apabila nilai support dari suatu item dibawah minimum support maka itemsets tersebut dibuang atau tidak dibuat rules-nya.     
+4. Membandingkan antara minimum Confidence dengan Confidence dari rules yang telah memenuhi minimum support . Hanya ambil rules yang memiliki Confidence lebih tinggi dari minimum Confidence.      
+
+<center>
+
+
+![](image/flow.png)
+
+</center>
+
+
+
+## Sparse Matrix
+
+Setelah mengetahui *metrics* yang digunakan dalam market basket analysis, serta mengetahui cara kerja dari algoritma Apriori, sekarang kita akan membuat rules dari data `retail_clean`. Untuk membuat rules menggunakan algoritma Apriori struktur dari inputan haruslah *matrix*. Matrix yang terbentuk merepresentasikan setiap baris berupa id transaksi dan setiap kolom merepresentasikan barang yang dibeli. 
+
+```{r}
+knitr::include_graphics("image/matrix.png")
+```
+
+Gambar diatas merupakan ilustrasi bila data `df_dummy` diubah menjadi matrix, matrix diatas disebut sebagai `sparse matrix`.
+
+**Sparse Matrix** merupakan matrix dengan element utamanya adalah nilai 0.
+
+
+kekurangan dari sparse matrix adalah dimensi yang sangat besar, dimensi yang besar ini dapat memakan komputasi yang besar sehingga memperlambat waktu pembuatan rules. 
+
+Untuk mengatasi permasalahan tersebut kita akan menggunakan data yang bertipe `transactions`. Data yang akan diguanakan adalah data `retail_clean`, data tersebut harus dikelompokkan berdasarkan `InvoiceNo` dengan menggunakan fungsi `split()`
+
+```{r}
+retail_list <- split(retail_clean$Description, retail_clean$InvoiceNo)
+head(retail_list, 3)
+```
+
+setelah mengubah data retail menjadi list selanjutnya kita akan ubah menjadi transaction dengan menggunakan fungsi `as()`
+```{r}
+retail_transaction <- as(retail_list, "transactions")
+retail_transaction %>% 
+  head(3) %>% 
+  inspect()
+```
+
+Pada dasarnya data transactionb diperoleh dari sparse matrix yang disederhanakan
+```{r}
+retail_transaction@data %>% 
+  dim()
+```
+
+
+# Create rules
+
+Untuk membuat rules dari algoritma Apriori bisa menggunakan fungsi `apriori()` dari package `arules`. Fungsi tersebut menerima beberapa parameter seperti :
+* data : data transaksi yang ingin digunakan
+* parameter :
+    * supp : batas bawah (threshold) dari nilai support
+    * conf : batas bawah (threshold) dari nilai confidence
+
+
+Pada kasus ini kita batasi minimum support-nya adalah 1% (0.01), artinya item atau kombinasi item harus ada di minimal 1% transaksi dari total keseluruhan transaksi. Kita juga batasi rules yang akan ditampilkan hanya rules dengan minimal confidence sebesar 0.7.
+
+```{r message=F}
+retail_rules <- apriori(data = retail_transaction, parameter = list(supp = 0.01, conf = 0.7))
+```
+
+
+Untuk melihat rangkuman dari aturan yang dihasilkan fungsi apriori dapat menggunakan fungsi `summary()`
+```{r message=F}
+summary(retail_rules)
+```
+
+Dari hasil diatas diketahui bahwa rules yang dihasilkan sebanyak 218 rules, dimana rules terpanjang terdiri dari 4 item dengan jumlah rules sebanyak 32. selain itu kita bisa mengetahui nilai statistik dari support, confidence, coverage serta lift. 
+
+## Output
+
+### Rules
+
+Fungsi apriori diatas menghasilkan 218 rules, kita bisa menampilkan beberapa rules saja berdasarkan kriteria yag kita pilih. Bila ingin melihat 5 rules teratas berdasarkan nilai confidence tertinggi dapat menggunakan code seperti berikut
+
+```{r}
+rules_conf <- head(retail_rules, 5, by = "confidence")
+inspect(rules_conf)
+```
+
+Nilai *Confidence* yang tinggi menunjukkan seberapa besar peluang membeli item lainnya jika kita telah membeli suatu item. Rules dengan *Confidence* tertinggi adalah **{jam making set printed, suki shoulder bag} => {dotcom postage}**, artinya ketika seorang pelanggan membeli 2 item tersebut, kemungkinan besar pelanggan juga akan membeli **dotcom postage** karena dari seluruh transaksi yang berisi 2 item pertama yang dibeli, 0.958 atau 95.8% pembelian juga terdapat item **dotcom postage**. 
+
+Kelemahan apabila melihat rules berdasarkan nilai *Confidence* adalah, *Confidence* hanya melihat dari transaksi antecedent dan tidak memperhatikan transaksi-transaksi lain dari consequent. Maka, kita perlu melihat seberapa baik antecedent meningkatkan peluang untuk pelanggan membeli item lainnya jika kita mengetahui dia telah memberi sekumpulan barang-barang tertentu dibandingkan ketika kita tidak tahu bahwa pelanggan membeli barang-barang tersebut. Oleh sebab itu mari kita lihat 5 rules dengan *Lift* tertinggi.
+
+```{r}
+rules_lift <- head(retail_rules, n = 10, by = "lift")
+inspect(rules_lift)
+```
+
+Rules {herb marker thyme} => {herb marker rosemary} memiliki *Lift* terbesar dengan nilai 80. Ketika nilai *Lift* lebih besar dari 1, maka pembelian **herb marker thyme** memang meningkatkan peluang pembeli untuk membeli **herb marker rosemary**. Jika kita bandingkan, rules dengan *Confidence* tertinggi, yakni**{jam making set printed, suki shoulder bag} => {dotcom postage}** ternyata hanya memiliki *Lift* sebesar 28. Meskipun pembelian kedua item tersebut meningkatkan peluang untuk membeli **dotcom postage**, tetapi efeknya tidak terlalu besar jika dibandingkan dengan rules lainnya.
+
+### Visualisasi Output
+
+Manusia tidak dirancang untuk melihat deretan angka-angka dalam bentuk tabel dan terkadang sulit untuk membandingkan rules satu dan lainnya serta interaksi antar rules tidak terlihat ketika hanya membaca tabel saja. Oleh sebab itu rules yang dihasilkan perlu dilakukan visualisasi untuk mempermudah pemahaman terhadap rules yang terbentuk. 
+
+Untuk memvisualisasikan rules yang sudah terbentuk kita dapat menggunakan fugsi `plotly_arules` dari packages `arulesViz`
+
+```{r message=F, warning=F}
+plotly_arules(retail_rules)
+```
+
+Dari 218 rules yang dihasilkan, hanya terdapat beberapa rules yang memiliki *Confidence* tinggi dan *Lift* yang tinggi pula, sementara sebagian besar rules hanya memiliki *Lift* tinggi atau *Confidence* tinggi saja. Dari semua rules yang dihasilkan, tidak terdapat rules yang memilki *Lift* kurang dari 1, sehingga dapat disimpulkan bahwa semua rules yang dihasilkan dapat meningkatkan peluang untuk pembelian item tertentu.
+
+Dari rules yang dihasilkan dapat dilihat juga hubungan antar rules dengan menggunakan `graph` atau network, dengan tiap lingkaran atau titik adalah rules dan panah sebagai hubungan antara rules dengan item barangnya.
+
+
+```{r  message=F, warning=F, fig.width=12}
+plot(retail_rules, 
+     method = "graph", 
+     measure = "lift",  
+     engine = "htmlwidget" # membuat grafik interaktif
+     )
+
+
+```
+
+Dari grafik yang dihasilkan, terdapat beberapa cluster atau kelompok rules yang saling berinteraksi satu sama lain. Salah satu yang terbesar adalah cluster yang berisi  charlotte bag yang saling terhubung. Cluster lainnya yang berisi banyak rules yang saling terkoneksi adalah clusterherb marker.
+
+Kita ambil contoh cluster charlotte bag, yang hanya terdiri dari 5 item/produk, yakni woodland charlotte bag, strawberry charlotte bag, red retrospot charlotte bag, charlotte bag pink polkadot, charlotte bag suki design. Dari interaksi 5 item tersebut, dihasilkan puluhan rules/aturan yang berbeda. Kalau diperhatikan ke 5 item tersebut saling terhubung, maka ini menunjukkan hubungan keterkaitan antara rules satu dengan lainnya. Karena kita yakin ada hubungan keterkaitan yang kuat antara item satu dengan lainnya di dalam cluster tersebut, maka kita buat promo *Bundle Package* yakni paket lengkap yang berisi 5 item tersebut.
+
+
+# Dive Deeper
+
+
+
+# Other Implementation
+
+
+
+
+
+
+
+
+
+
+
+
