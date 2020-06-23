@@ -77,11 +77,7 @@ library(arulesViz)
 
 ## Tujuan Pembelajaran
 
----
-
-Tujuan utama dari materi ini adalah untuk memberikan pengenalan yang komprehensif tentang alat dan perangkat lunak untuk melakukan market basket analysis menggunakan alat open-source populer: R. Materi akan mencakup:
-
----
+Tujuan utama dari workshop ini adalah untuk memberikan pengenalan yang komprehensif mengenai tools dan perangkat lunak yang digunakan untuk melakukan market basket analysis, yakni sebuah open-source populer: R. Adapun materi ini akan mencakup:
 
 - **Dasar Bahasa Pemrograman R**
   - R dan RStudio
@@ -91,12 +87,12 @@ Tujuan utama dari materi ini adalah untuk memberikan pengenalan yang komprehensi
 - **Menyiapkan Data dengan R**
   - Membaca dataset
   - Bekerja dengan data log transaksi menggunakan R : tips dan teknik
-  - Bekerja dengan matriks sparse
+  - Bekerja dengan matrix sparse
   - Memvisualisasikan data transaksi
 	  
-- **Algoritma Apriori untuk Market Basket Analysis**
+- **Algoritme Apriori untuk Market Basket Analysis**
   - Metrik dari Market Basket Analysis
-  - Algoritma Apriori
+  - Algoritme Apriori
   - Mengekstraksi aturan
   - Mengevaluasi kinerja model
 	  
@@ -104,9 +100,8 @@ Tujuan utama dari materi ini adalah untuk memberikan pengenalan yang komprehensi
   - Market Basket Analysis menggunakan Dataset Retail
   - Menganalisis Aturan yang Dihasilkan
   - Membuat visualisasi yang interaktif pada aturan yang dihasilkan
+	
 	 
-	 
- 
 Pada akhir workshop ini, peserta akan diminta untuk mengerjakan tugas yang kami sebut dengan *Learn by Building* menggunakan xxx dataset. Adapun kami telah menyiapkan templat file berformat .Rmd dengan mengosongkan beberapa bagian kode, sehingga peserta bisa mengisi bagian kode yang kosong untuk latihan. Berbekal materi yang telah peserta pelajari, di akhir sesi peserta akan membuat laporan terkait market basket analysis beserta rekomendasi bisnisnya.
 
 
@@ -129,7 +124,7 @@ R adalah bahasa pemrograman statistik yang dibuat oleh Ross Ihaka dan Robert Gen
 
 2. **Memiliki banyak Library**     
 
-R menyediakan banyak packages tambahan yang menambahkan fungsionalitas out-of-the-box untuk berbagai kegunaan: uji statistik, analisis deret waktu, visualisasi yang indah, dan berbagai tugas machine learning seperti algoritma regresi, algoritma klasifikasi, dan algoritma clustering. Komunitas R terkenal karena kontribusinya yang aktif dalam hal packages.      
+R menyediakan banyak packages tambahan yang menambahkan fungsionalitas out-of-the-box untuk berbagai kegunaan: uji statistik, analisis deret waktu, visualisasi yang indah, dan berbagai tugas machine learning seperti algoritme regresi, algoritme klasifikasi, dan algoritme clustering. Komunitas R terkenal karena kontribusinya yang aktif dalam hal packages.      
 
 3. **Sumber Terbuka**      
 
@@ -155,21 +150,23 @@ Pada awal materi kita telah membahas perbedaan utama antara R dan RStudio. RStud
 
 ![](image/panel.png)
 
-Terdapat 4 panel utama yang harus Anda pahami yaitu :      
+Terdapat 4 panel utama yang harus Anda pahami yaitu :    
+
 1. **Panel Source** : Panel ini merupakan fitur utama dari RStudio, panel ini menampilkan file yang sedang dibuka pada RStudio.        
 
 2. **Panel Console** : Panel ini menampilkan console asli dari R yang digunakan untuk berkomunikasi dengan R session. Terdapat beberapa tab lain seperti Terminal yang dapat digunakan untuk mengakses komputer Anda melalui Command Line Interface (CLI).     
 
 3. **Panel Environment / History** : Bagian ini menampilkan seluruh object R yang sudah dibuat selama session yang sama. Terdapat tab History yang berfungsi untuk melihat history dari kode yang sudah dijalankan sebelumnya.     
 
-4. Panel keempat memiliki beberapa tab seperti :     
-  - tab Files : Daftar dari berkas (file) yang berada dalam working directory.
-  - tab Plot : Menampilkan visualisasi yang terbentuk
-  - tab Packages : Berisi daftar packages yang sudah terinstall
-  - tab Help : Menampilkan dokumentasi resmi dari setiap fungsi     
+4. **Panel Files/Plot/Packages/Help** :     
+
+  - Tab Files : Daftar dari berkas (file) yang berada dalam working directory.
+  - Tab Plot : Menampilkan visualisasi yang terbentuk
+  - Tab Packages : Berisi daftar packages yang sudah terinstall
+  - Tab Help : Menampilkan dokumentasi resmi dari setiap fungsi     
   
 
-Materi ini dibuat menggunakan R markdown file (.Rmd) yang sudah terintegrasi dengan RStudio dan beberapa fitur sudah diatur dalam packages R markdown. R markdown dapat digunakan untuk membuat laporan dari analisa dengan standar yang tinggi. Jika Anda melihat lokasi original dari file ini maka Anda akan menemukan 3 file utama yaitu : file .Rmd, .html, dan .pdf. Adapun file HTML dan PDF dihasilkan dari R markdown dengan fungsi `knit` dari packages `rmarkdown.`
+Materi ini dibuat menggunakan R markdown file (.Rmd) yang sudah terintegrasi dengan RStudio dan beberapa fitur sudah diatur dalam packages `rmarkdown`. R markdown dapat digunakan untuk membuat laporan dari analisa dengan standar yang tinggi. Jika Anda melihat lokasi original dari file ini maka Anda akan menemukan 3 file utama yaitu : file .Rmd, .html, dan .pdf. Adapun file HTML dan PDF dihasilkan dari R markdown dengan fungsi `knit` dari packages `rmarkdown.`
 
 Pada R markdown Anda dapat memasukkan narasi dari laporan yang dibuat serta kode program dari analisis Anda. Adapun tempat untuk memasukkan kode program pada R markdown disebut chunk. Terdapat 2 cara untuk membuat chunk yaitu :     
 
@@ -207,7 +204,7 @@ Perlu diperhatikan bahwa R bahasa pemrograman yang *case sensitive* sehingga "Al
 activity == "algoritma"
 ```
 
-Operator `==` disebut dengan persamaan. Operator ini berfungsi untuk memeriksa apakah nilai pada sisi kiri sama dengan nilai pada sisi kanan. Hasil dari kode tersebut merupakan `FALSE`, artinya kedua data tersebut berbeda. Hal ini karena pada obyek `activity`, elemen yang disimpan adalah "Algoritma" bukan "algoritma".
+Operator `==` disebut dengan persamaan. Operator ini berfungsi untuk memeriksa apakah nilai pada sisi kiri sama dengan nilai pada sisi kanan. Hasil dari kode tersebut merupakan `FALSE`, artinya kedua data tersebut berbeda. Hal ini karena pada objek `activity`, elemen yang disimpan adalah "Algoritma" bukan "algoritma".
 
 ## Tipe Data di R
 
@@ -249,7 +246,9 @@ class(mix)
 ```
 
 **Knowledge Check**
-Tentukan tipe data dari vector-vector di bawah ini?      
+
+Tentukan tipe data dari vector-vector di bawah ini?    
+
 - c(TRUE, 1L, 1/2)     
 - c("1", 12, 33.3)     
 - c(1,2,3,4L)     
@@ -406,7 +405,7 @@ retail_clean <- retail %>%
 head(retail_clean)
 ```
 
-Hasil dari proses *filtering* dan *selection* disimpan pada objek `retail_clean`, objek inilah yang akan kita gunakan dalam proses analisis kedepanya.
+Hasil dari proses *filtering* dan *selection* disimpan pada objek `retail_clean`, objek inilah yang akan kita gunakan dalam proses analisis kedepannya.
 
 ## Exploratory Data Analysis
 
@@ -449,9 +448,9 @@ Berdasarkan rumus di atas, A adalah *antecedent* atau pendahulu sedangkan B adal
 
 ## Association Rules Metrics
 
-Sebelum masuk ke dalam penjelasan tentang algoritme Apriori, pertama kita harus mengetahui dahulu metrik atau tolak ukur yang digunakan dalam association rules, yang meliputi *Support*, *Confidence*, dan *Lift*.
+Sebelum masuk ke dalam penjelasan tentang algoritme apriori, pertama kita harus mengetahui dahulu metrik atau tolak ukur yang digunakan dalam association rules, yang meliputi *Support*, *Confidence*, dan *Lift*.
 
-Sebagai ilustrasi, kita akan menggunakan data buatan berikut dengan 5 transaksi.
+Sebagai ilustrasi, kita akan menggunakan data buatan yang berisi 5 transaksi sebagai berikut:
 
 ```{r}
 df_dummy <- data.frame(transaction_id = 1:5,
@@ -498,7 +497,7 @@ Berdasarkan data transaksi sebelumnya, maka Confidence untuk item `coffee` dan `
 
 $$Confidence(mineral\ water => coffee) =  \frac{3}{4} = 0.75$$
 
-Confidence(mineral water => coffee) menunjukkan rules/aturan jika seseorang membeli mineral water, berapa kemungkinannya dia juga membeli coffee. Maka, kita tinggal cari ada berapa transaksi yang terdapat item mineral water dan coffee dan dibagi dengan seluruh transaksi yang di dalamnya terdapat mineral water. Dari total 5 transaksi yang ada, 4 di antaranya terdapat item mineral water dan dari 4 transaksi tersebut terdapat 3 transaksi yang memiliki coffee maupun mineral water, sehingga nilai Confidence(mineral water => coffee) adalah 3 dari 4 transaksi atau sama degan 75%. Maka, ketika seseorang membeli mineral water, kemungkinan seseorang membeli juga coffee adalah sekitar 75%.
+Confidence(mineral water => coffee) menunjukkan rules/aturan jika seseorang membeli mineral water, berapa kemungkinannya dia juga membeli coffee. Maka, kita perlu mencari ada berapa transaksi yang terdapat item mineral water dan coffee dan dibagi dengan seluruh transaksi yang di dalamnya terdapat mineral water. Dari total 5 transaksi yang ada, 4 di antaranya terdapat item mineral water dan dari 4 transaksi tersebut terdapat 3 transaksi yang memiliki coffee maupun mineral water, sehingga nilai Confidence(mineral water => coffee) adalah 3 dari 4 transaksi atau sama degan 75%. Maka, ketika seseorang membeli mineral water, kemungkinan seseorang membeli juga coffee adalah sekitar 75%.
 
 Kelemahan dari Confidence adalah Confidence hanya mempertimbangkan seberapa banyak/populer item A saja (perhatikan bagian penyebut) dan tidak memperhatikan seberapa populer item B dalam seluruh transaksi. Perhatikan ilustrasi menggunakan diagram Venn berikut:
 
@@ -510,7 +509,7 @@ Berdasarkan gambar di atas, terdapat 80 transaksi yang berisi Milk dan 13 transa
 
 $$Confidence(Toothbrush => Milk) = \frac{10}{13} = 76.9\%$$
 
-Ketika seseorang membeli Toothbrush maka ada kemungkinan 76.9% dia juga akan membeli Milk. Sekilas mungkin masuk akal, tetapi bila diperhatikan, Milk memiliki jumlah transaksi yang besar dan hanya sedikit dari transaksi tersebut yang berkaitan dengan Toothbrush. Karena item Milk sangat populer, maka wajar jika transaksi customer yang membeli Toothbrush juga akan cenderung membeli Milk, sehingga meningkatkan nilai Confidence-nya. Untuk mengatasi hal ini, maka terdapat satu metrik lagi yang menggunakan informasi dari antecedent dan precedent, yakni Lift yang akan dibahas di sub-bab berikutnya.
+Ketika seseorang membeli Toothbrush maka ada kemungkinan 76.9% dia juga akan membeli Milk. Sekilas mungkin masuk akal, tetapi bila diperhatikan, Milk memiliki jumlah transaksi yang besar dan hanya sedikit dari transaksi tersebut yang berkaitan dengan Toothbrush. Karena item Milk sangat populer, maka wajar jika transaksi customer yang membeli Toothbrush juga akan cenderung membeli Milk, sehingga meningkatkan nilai Confidence-nya. Solusi untuk mengatasi hal ini, terdapat satu metrik lagi yang menggunakan informasi dari antecedent dan precedent, yakni **Lift** yang akan dibahas di sub-bab berikutnya.
 
 ### Lift
 
@@ -555,9 +554,9 @@ Algoritme yang umum digunakan untuk membuat association rules adalah *Apriori Al
 </center>
 
 
-## Sparse Matrix
+## Sparse matrix
 
-Setelah mengetahui *metrics* yang digunakan dalam market basket analysis, serta cara kerja dari algoritma Apriori, sekarang kita akan membuat rules dari data `retail_clean`. Perlu diingat bahwa struktur data input dalam Algoritma Apriori harus berbentuk *matrix*.
+Setelah mengetahui *metrics* yang digunakan dalam market basket analysis, serta cara kerja dari algoritme apriori, sekarang kita akan membuat rules dari data `retail_clean`. Perlu diingat bahwa struktur data input dalam algoritme Apriori harus berbentuk *matrix*.
 Setiap baris dalam matrix yang terbentuk merepresentasikan id transaksi dan kolom merepresentasikan barang yang dibeli.
 
 ```{r}
@@ -586,6 +585,7 @@ retail_transaction %>%
 ```
 
 Pada dasarnya, data transaction diperoleh dari sparse matrix yang disederhanakan
+
 ```{r}
 retail_transaction@data %>% 
   dim()
@@ -593,7 +593,7 @@ retail_transaction@data %>%
 
 # Membuat rules
 
-Rules dari algoritma Apriori bisa dihasilkan menggunakan fungsi `apriori()` dari package `arules`. Fungsi tersebut menerima beberapa parameter seperti :
+Rules dari algoritme apriori bisa dihasilkan dengan fungsi `apriori()` dari package `arules`. Fungsi tersebut menerima beberapa parameter seperti :
 * data : data transaksi yang ingin digunakan
 * parameter :
     * supp : batas bawah (threshold) dari nilai support
@@ -646,7 +646,7 @@ Untuk memvisualisasikan rules yang sudah terbentuk kita dapat menggunakan fungsi
 plotly_arules(retail_rules)
 ```
 
-Dari 218 rules yang dihasilkan, hanya terdapat beberapa rules yang memiliki *Confidence* tinggi dan *Lift* yang tinggi pula, sementara sebagian besar rules hanya memiliki *Lift* tinggi atau *Confidence* tinggi saja. Dari semua rules yang dihasilkan, tidak terdapat rules yang memilki *Lift* kurang dari 1, sehingga dapat disimpulkan bahwa semua rules yang dihasilkan dapat meningkatkan peluang untuk pembelian item tertentu.
+Berdasarkan 218 rules yang dihasilkan, hanya terdapat beberapa rules yang memiliki *Confidence* tinggi dan *Lift* yang tinggi pula, sementara sebagian besar rules hanya memiliki *Lift* tinggi atau *Confidence* tinggi saja. Sedangkan, dari semua rules yang dihasilkan, tidak terdapat rules yang memilki *Lift* kurang dari 1, sehingga dapat disimpulkan bahwa semua rules yang dihasilkan dapat meningkatkan peluang untuk pembelian item tertentu.
 
 Dari rules yang dihasilkan dapat dilihat juga hubungan antar rules dengan menggunakan `graph` atau network, dengan tiap lingkaran atau titik adalah rules dan panah sebagai hubungan antara rules dengan item barangnya.
 
@@ -657,13 +657,11 @@ plot(retail_rules,
      measure = "lift",  
      engine = "htmlwidget" # membuat grafik interaktif
      )
-
-
 ```
 
-Dari grafik yang dihasilkan, terdapat beberapa cluster atau kelompok rules yang saling berinteraksi satu sama lain. Salah satu yang terbesar adalah cluster yang berisi  charlotte bag yang saling terhubung. Cluster lainnya yang berisi banyak rules yang saling terkoneksi adalah clusterherb marker.
+Pada grafik yang dihasilkan di atas, terdapat beberapa cluster atau kelompok rules yang saling berinteraksi satu sama lain. Salah satu yang terbesar adalah cluster yang berisi  charlotte bag yang saling terhubung. Cluster lainnya yang berisi banyak rules yang saling terkoneksi adalah clusterherb marker.
 
-Kita ambil contoh cluster charlotte bag, yang hanya terdiri dari 5 item/produk, yakni woodland charlotte bag, strawberry charlotte bag, red retrospot charlotte bag, charlotte bag pink polkadot, charlotte bag suki design. Dari interaksi 5 item tersebut, dihasilkan puluhan rules/aturan yang berbeda. Kalau diperhatikan ke 5 item tersebut saling terhubung, maka ini menunjukkan hubungan keterkaitan antara rules satu dengan lainnya. Karena kita yakin ada hubungan keterkaitan yang kuat antara item satu dengan lainnya di dalam cluster tersebut, maka kita buat promo *Bundle Package* yakni paket lengkap yang berisi 5 item tersebut.
+Kita ambil contoh cluster charlotte bag, yang hanya terdiri dari 5 item/produk, yakni woodland charlotte bag, strawberry charlotte bag, red retrospot charlotte bag, charlotte bag pink polkadot, charlotte bag suki design. Berdasarkan interaksi 5 item tersebut, dihasilkan puluhan rules/aturan yang berbeda. Apabila diperhatikan ke 5 item tersebut saling terhubung, maka hal ini menunjukkan adanya hubungan keterkaitan antara rules satu dengan lainnya. Oleh karena kita meyakini adanya hubungan keterkaitan yang kuat antara item satu dengan lainnya di dalam cluster tersebut, maka kita bisa membuat sebuah promo dalam bentuk *Bundle Package*; yakni paket lengkap yang berisi 5 item tersebut.
 
 
 # Dive Deeper
