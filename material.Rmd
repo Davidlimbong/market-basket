@@ -669,6 +669,15 @@ Kita ambil contoh cluster charlotte bag, yang hanya terdiri dari 5 item/produk, 
 Pada Materi ini telah disediakan file `dive-deeper.Rmd` untuk latihan dalam melakukan market basket analysis. Pada file tersebut anda harus melakukan analisis mulai dari *data preparation*, *Exploratory Analysis*,  *Build Rules*, hingga *Rules Interpretation*. Berikan penjelasan dari setiap tahapan analisis yang dilakukan.
 
 
-# Other Implementation
+# Penerapan lainnya pada Market Basket Analysis
 
+Terdapat beberapa contoh penerapan Maret Basket Analysis selain pada industri retail, seperti : 
+
+* Menganalisis cacat bersamaan dan menemukan *common root cause*
+* Identifikasi risiko dalam rantai pasokan
+* Menganalisis hubungan antara penyakit berdasarkan catatan medis
+* Rekomendasi untuk pemberi pinjaman dalam sistem Pinjaman P2P
+* Menganalisis hubungan antara indeks saham dengan metrik ekonomi lainnya
+
+Detail untuk setiap case dapat dilihat [disini](https://bit.ly/mba_implementation)
 
