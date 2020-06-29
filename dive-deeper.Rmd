@@ -1,0 +1,137 @@
+---
+title: "LBB Market Basket Analysis"
+author: "Team Algoritma"
+date: "6/26/2020"
+output: 
+  html_document:
+      highlight: espresso
+      theme: yeti
+      toc: true
+      toc_depth: 2
+      toc_float: true
+      df_print: paged
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+
+<!-- Load the library needed -->
+```{r}
+library(dplyr)
+library(arules)
+library(arulesViz)
+```
+
+
+# Background
+
+Pada Latihan ini kita akan membuat association rules dari data yang digunakan diambil dari Weka dataset. Dataset dapat diakses pada `data/supermarket.csv`. `supermarket.csv` merupakan dataset yang berisi daftar pembelian barang setiap transaksinya. 
+
+
+# Data Preparation
+
+```{r}
+supermarket <- read.csv("data/supermarket.csv")
+```
+
+
+<!-- Jelaskan kondisi data yang digunakan, seperti dimensi dari data, dan struktur data yang digunakan. Anda bisa menggunakan fungsi head, str, summary -->
+
+```{r}
+# your code
+
+```
+
+
+
+```{r}
+# your code
+
+```
+
+
+# Exploratory Analysis
+
+<!-- Pada bagian ini anda dapat melakukan eksplorasi data untuk mengetahui kondsi dari dari data yang ingin diolah, anda bisa menjawab beberapa pertanyaan yang sudah disediakan -->
+
+
+<!-- 1. barang apa yang paling sering dibeli ? -->
+
+```{r}
+# your code
+
+
+```
+
+<!-- 2.  berapa banyak barang yang dibeli setiap transaksi? -->
+
+```{r}
+# your code
+
+
+```
+
+
+# Build Rules
+
+<!-- Ubah dataset menjadi format transactions -->
+
+```{r}
+# your code
+
+```
+
+
+
+<!-- Buat rules menggunakan fungsi apriori, anda bisa mengatur parameter supp, dan conf untuk mendapatkan rules yang anda inginkan -->
+
+```{r}
+# your code
+
+
+```
+
+
+<!-- berdarakan rules yang sudah dibuat, jelaskan rangkuman dari rules yang berhasil dibuat menggunakan fungsi summary-->
+
+
+```{r}
+# your code
+
+
+```
+
+
+# Rules Interpretation
+
+
+<!-- lihat beberapa rules yang sudah berhasil dibuat berdasarakan matrics yang anda lihat seperti lift, support, confidence, kemudian jelaskan analisis anda -->
+
+```{r}
+rules_lift <- head(retail_rules, n = 10, by = "lift")
+inspect(rules_lift)
+```
+
+<!-- Gambarkan hubungan antara confidence, support, dan lift berdasarkan rules yang sudah dibuat, jelaskan! -->
+
+```{r message=F, warning=F}
+# your code here
+
+
+```
+
+
+<!-- Visualisasikan interaksi antar rules yang sudah dibuat berdasarkan graf, jelaskan -->
+
+
+```{r  message=F, warning=F, fig.width=12}
+# your code
+
+
+```
+
+
+<!-- Berikan kesimpulan atas hasil analisa anda. -->

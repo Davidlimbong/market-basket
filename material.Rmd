@@ -666,19 +666,9 @@ Kita ambil contoh cluster charlotte bag, yang hanya terdiri dari 5 item/produk, 
 
 # Dive Deeper
 
+Pada Materi ini telah disediakan file `dive-deeper.Rmd` untuk latihan dalam melakukan market basket analysis. Pada file tersebut anda harus melakukan analisis mulai dari *data preparation*, *Exploratory Analysis*,  *Build Rules*, hingga *Rules Interpretation*. Berikan penjelasan dari setiap tahapan analisis yang dilakukan.
 
 
 # Other Implementation
-
-
-
-```{r}
-
-```
-
-
-
-
-
 
 
